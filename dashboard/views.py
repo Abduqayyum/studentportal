@@ -1,7 +1,5 @@
-
-from pickletools import read_uint1
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from .models import Notes, Homework, Todo
 from .forms import HomeworkForm, NotesForm, DashboardForm, TodoForm, ConversionForm, ConversionLengthForm,ConversionMassForm, UserRegistrationForm
 from django.views.generic import DetailView
@@ -39,11 +37,17 @@ def delete_note(request, pk):
     return redirect("notes")
 
 
+@login_required
+def notedetail(request, pk):
+    note = get_object_or_404(Notes, id=pk)
+    return render(request, "dashboard/notes_detail.html", {
+        "note": note
+    })
 
-class NoteDetailView(DetailView):
-    model = Notes
-    template_name = "dashboard/notes_detail.html"
-    context_object_name = "note"
+# class NoteDetailView(DetailView):
+#     model = Notes
+#     template_name = "dashboard/notes_detail.html"
+#     context_object_name = "note"
 
 
 @login_required
