@@ -1,2 +1,2 @@
-release:python manage.py migrate
-web:gunicorn studentstudyportal.wsgi
+release: python manage.py migrate
+web: gunicorn studentstudyportal.wsgi
