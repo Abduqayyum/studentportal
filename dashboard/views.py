@@ -200,10 +200,12 @@ def update_todo(request, pk):
 def books(request):
     if request.method == "POST":
         form = DashboardForm(request.POST)
-        text = request.POST["text"]
+        text = request.POST["text"]       
         url = f"https://www.googleapis.com/books/v1/volumes?q={text}"
         r = requests.get(url)
         answer = r.json()
+        if answer.get("totalItems") == 0:
+            return redirect("books")
         result_list = []
         for i in range(5):
             result_dict = {
