@@ -4,7 +4,7 @@
 <section class='text-center container'>
     <h2>Student Dictionary</h2>
     <p>Enter any word to get the phonetics, definition and an example for the word</p>
-    <form  method="post">
+    <form method="post">
         {% csrf_token %}
         {{form}}
         <input class="btn btn-danger" type="submit" value="Submit">
@@ -35,8 +35,7 @@
         <hr>
 
     </div>
-    {% else %}
-        <h2>Sorry, API request limit exceeded</h2>
+
     {% endif %}
 </section>
 {% endblock content %}

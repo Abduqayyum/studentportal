@@ -6,6 +6,7 @@ from django.views.generic import DetailView
 from youtubesearchpython import VideosSearch
 import requests
 import wikipedia
+import random
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -132,7 +133,7 @@ def youtube(request):
                     desc = j["text"]
             result_dict["description"] = desc
             result_list.append(result_dict)
-            data = {
+        data = {
                 "form": form,
                 "results": result_list
             }
@@ -204,22 +205,20 @@ def books(request):
         r = requests.get(url)
         answer = r.json()
         result_list = []
-        for i in range(10):
+        for i in range(5):
             result_dict = {
-                "title": answer["items"][i]["volumeInfo"]["title"],
+                "title": answer["items"][i]["volumeInfo"].get("title"),
                 "subtitle": answer["items"][i]["volumeInfo"].get("subtitle"),
                 "description": answer["items"][i]["volumeInfo"].get("description"),
                 "count": answer["items"][i]["volumeInfo"].get("pageCount"),
-                "categories": answer["items"][i]["volumeInfo"].get("categories"),
-                "rating": answer["items"][i]["volumeInfo"].get("pageRating"),
+                "obj_id": answer["items"][i].get("id"),
+                "rating": answer["items"][i]["volumeInfo"].get("ratingCount"),
                 "thumbnail": answer["items"][i]["volumeInfo"].get("imageLinks").get("thumbnail"),
                 "preview": answer["items"][i]["volumeInfo"].get("previewLink"),
-
-                
             }
            
             result_list.append(result_dict)
-            data = {
+        data = {
                 "form": form,
                 "results": result_list
             }
@@ -273,12 +272,16 @@ def wiki(request):
     if request.method == "POST":
         text = request.POST["text"]
         form = DashboardForm(request.POST)
-        search = wikipedia.page(text)
+        try:
+            search = wikipedia.page(text)
+        except wikipedia.DisambiguationError as e:
+            s = random.choice(e.options)
+            search = wikipedia.page(s)
+        except:
+            search = None
         data = {
             "form": form,
-            "title": search.title,
-            "link": search.url,
-            "details": search.summary
+            "search": search
         }
         return render(request, "dashboard/wiki.html", data)
     else:
